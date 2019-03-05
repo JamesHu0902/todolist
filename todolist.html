@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <!-- 導入bs4 -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+    <!-- 導入Vue -->
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    
+    <title>todolist</title>
+</head>
+<body>
+    <div id="app" class="container my-3">
+        <div class="input-group mb-3">
+          <div class="input-group-prepend">
+            <span class="input-group-text" id="basic-addon1">待辦事項</span>
+          </div>
+          <input type="text" class="form-control" placeholder="準備要做的任務" v-model="newtodo" @keyup.enter="add">
+          <div class="input-group-append">
+            <button class="btn btn-primary" type="button" @click="add">新增</button>
+          </div>
+        </div>
+        <div class="card text-center">
+          <div class="card-header">
+            <ul class="nav nav-tabs card-header-tabs">
+              <li class="nav-item">
+                <a class="nav-link" :class="{'active':type=='all'}" @click="type='all'" href="#">全部</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link " :class="{'active':type=='active'}" @click="type='active'" href="#">進行中</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" :class="{'active':type=='done'}" @click="type='done'"  href="#">已完成</a>
+              </li>
+            </ul>
+          </div>
+          <ul class="list-group list-group-flush text-left">
+            <li class="list-group-item" v-for="item in Filteredtodos"  @dblclick="change(item)">
+              <div class="d-flex" v-if="item.id!==cachetodo.id">
+                <div class="form-check">
+                  <input type="checkbox" class="form-check-input" :id="item.id" v-model="item.completed">
+                  <label class="form-check-label" :for="item.id" 
+                         :class="{'completed':item.completed}">
+                    {{item.title}}
+                  </label>
+                </div>
+                <button type="button" class="close ml-auto" aria-label="Close" @click="del(item)">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <input type="text" class="form-control" v-model="cachetitle" v-if= "item.id === cachetodo.id" 
+                     @keyup.esc="cancel" @keyup.enter="done(item)">
+            </li>
+      <!--       <li class="list-group-item">
+              <input type="text" class="form-control">
+            </li> -->
+          </ul>
+          <div class="card-footer d-flex justify-content-between">
+            <span>還有 {{activetodos}} 筆任務未完成</span>
+            <a href="#" @click="delall">清除所有任務</a>
+          </div>
+        </div>
+      </div>
+</body>
+<script>
+    var app = new Vue ({
+        el:'#app',
+        data:{
+            newtodo:'',
+            todos:[{
+            id:'test',
+            title:'test',
+            completed:false
+            }],
+            type:'all',
+            cachetitle:'',
+            cachetodo:{}
+        },
+        methods:{
+            add:function(){
+            var val = this.newtodo.trim();
+            var timestrap = Math.floor(Date.now());
+            if(!val)return;
+            this.todos.push({
+                id:timestrap,
+                title:val,
+                completed:false
+            })
+            this.newtodo = ''
+            },
+            delall:function(){
+            this.todos=[];
+            },
+            del:function(todos){
+            var newindex = this.todos.findIndex(function(item){
+                return item.id === todos.id
+            })
+            this.todos.splice(newindex,1)
+            },
+            change(item){
+            this.cachetodo = item;
+            this.cachetitle = item.title;
+            },
+            cancel(){
+            this.cachetodo = {}
+            },
+            done(item){
+            item.title = this.cachetitle;
+            this.cachetodo = {};
+            this.cachetitle = '';
+            }
+        },
+        computed:{
+            Filteredtodos:function(){
+            if(this.type == 'all'){
+                return this.todos;
+            }else if(this.type == 'active'){
+                var newtodos =[];
+                this.todos.forEach(function(item){
+                if(!item.completed){
+                newtodos.push(item)
+                }
+                })
+                return newtodos;
+            }else if(this.type == 'done'){
+                var newtodos =[];
+                this.todos.forEach(function(item){
+                if(item.completed){
+                newtodos.push(item)
+                }
+                })
+                return newtodos;
+            }
+            },
+            activetodos:function(){
+            var activetodos =[];
+            this.todos.forEach(function(item){
+                if(!item.completed){
+                activetodos.push(item)
+                }
+            })
+            return activetodos.length
+            },
+        },
+    })
+</script>
+</html>

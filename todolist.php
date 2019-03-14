@@ -37,7 +37,7 @@ if(!empty($_POST['todo'])){
             </div>
             <input type="text" class="form-control" placeholder="準備要做的任務" v-model="newtodo" @keyup.enter="add">
             <div class="input-group-append">
-            <button class="btn btn-primary" type="button" @click="add">新增</button>
+            <button class="btn btn-primary" type="submit" @click="add">新增</button>
             </div>
         </div>
         <div class="card text-center">
@@ -108,10 +108,6 @@ if(!empty($_POST['todo'])){
             // id:'test',
             // title:'test',
             // completed:false
-            // },{
-            // id:'test2',
-            // title:'test2',
-            // completed:false
             // },],
 
             type:'all',
@@ -127,8 +123,8 @@ if(!empty($_POST['todo'])){
                 id:timestrap,
                 title:val,
                 completed:false
-            })
-            this.newtodo = ''
+            });
+            this.newtodo = '';
             },
             delall:function(){
             this.todos=[];

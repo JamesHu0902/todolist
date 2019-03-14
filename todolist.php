@@ -1,3 +1,17 @@
+<?php 
+include "msql.inc.php";
+date_default_timezone_set("Asia/Shanghai");
+$updatatime = date('Y')."/".date('m')."/".date('d')."-".date("h:i:sa");
+// 如果送出表單中有資料
+if(!empty($_POST['todo'])){
+    // 將代辦事項新增至 todolist 資料表
+    $sql = "insert 代辦事項(代辦事項,進度,開始時間)
+            values('{$_POST['todo']}','0','$updatatime')
+            ";
+    if(!mysqli_query($conn,$sql)) echo"送出失敗";
+    
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -18,66 +32,88 @@
 <body>
     <div id="app" class="container my-3">
         <div class="input-group mb-3">
-          <div class="input-group-prepend">
+            <div class="input-group-prepend">
             <span class="input-group-text" id="basic-addon1">待辦事項</span>
-          </div>
-          <input type="text" class="form-control" placeholder="準備要做的任務" v-model="newtodo" @keyup.enter="add">
-          <div class="input-group-append">
+            </div>
+            <input type="text" class="form-control" placeholder="準備要做的任務" v-model="newtodo" @keyup.enter="add">
+            <div class="input-group-append">
             <button class="btn btn-primary" type="button" @click="add">新增</button>
-          </div>
+            </div>
         </div>
         <div class="card text-center">
-          <div class="card-header">
+            <div class="card-header">
             <ul class="nav nav-tabs card-header-tabs">
-              <li class="nav-item">
+                <li class="nav-item">
                 <a class="nav-link" :class="{'active':type=='all'}" @click="type='all'" href="#">全部</a>
-              </li>
-              <li class="nav-item">
+                </li>
+                <li class="nav-item">
                 <a class="nav-link " :class="{'active':type=='active'}" @click="type='active'" href="#">進行中</a>
-              </li>
-              <li class="nav-item">
+                </li>
+                <li class="nav-item">
                 <a class="nav-link" :class="{'active':type=='done'}" @click="type='done'"  href="#">已完成</a>
-              </li>
+                </li>
             </ul>
-          </div>
-          <ul class="list-group list-group-flush text-left">
+            </div>
+            <ul class="list-group list-group-flush text-left">
             <li class="list-group-item" v-for="item in Filteredtodos"  @dblclick="change(item)">
-              <div class="d-flex" v-if="item.id!==cachetodo.id">
+                <div class="d-flex" v-if="item.id!==cachetodo.id">
                 <div class="form-check">
-                  <input type="checkbox" class="form-check-input" :id="item.id" v-model="item.completed">
-                  <label class="form-check-label" :for="item.id" 
+                    <input type="checkbox" class="form-check-input" :id="item.id" v-model="item.completed">
+                    <label class="form-check-label" :for="item.id" 
                         :class="{'completed':item.completed}">
                     {{item.title}}
-                  </label>
+                    </label>
                 </div>
                 <button type="button" class="close ml-auto" aria-label="Close" @click="del(item)">
-                  <span aria-hidden="true">&times;</span>
+                    <span aria-hidden="true">&times;</span>
                 </button>
-              </div>
-              <input type="text" class="form-control" v-model="cachetitle" v-if= "item.id === cachetodo.id" 
-                     @keyup.esc="cancel" @keyup.enter="done(item)">
+                </div>
+                <input type="text" class="form-control" v-model="cachetitle" v-if= "item.id === cachetodo.id" 
+                        @keyup.esc="cancel" @keyup.enter="done(item)">
             </li>
-      <!--       <li class="list-group-item">
-              <input type="text" class="form-control">
+        <!--       <li class="list-group-item">
+                <input type="text" class="form-control">
             </li> -->
-          </ul>
-          <div class="card-footer d-flex justify-content-between">
+            </ul>
+            <div class="card-footer d-flex justify-content-between">
             <span>還有 {{activetodos}} 筆任務未完成</span>
             <a href="#" @click="delall">清除所有任務</a>
-          </div>
+            </div>
         </div>
-      </div>
+        </div>
 </body>
 <script>
     var app = new Vue ({
         el:'#app',
         data:{
             newtodo:'',
-            todos:[{
-            id:'test',
-            title:'test',
-            completed:false
-            }],
+            todos:[
+            <?php
+                $sql = "select * from 代辦事項 order by 開始時間 DESC ";
+                $result = mysqli_query($conn,$sql);
+            if(mysqli_num_rows($result) > 0){
+                while($row = mysqli_fetch_array($result)){
+                    echo "{
+                        id:'{$row['開始時間']}',
+                        title:'{$row['代辦事項']}',
+                        completed:{$row['進度']}
+                        },";
+                }
+            };
+            
+            ?>
+            ],
+
+            // todos:[{
+            // id:'test',
+            // title:'test',
+            // completed:false
+            // },{
+            // id:'test2',
+            // title:'test2',
+            // completed:false
+            // },],
+
             type:'all',
             cachetitle:'',
             cachetodo:{}
@@ -152,7 +188,7 @@
 </script>
 <style>
 .completed {
-  text-decoration: line-through
+    text-decoration: line-through
 }
 </style>
 </html>

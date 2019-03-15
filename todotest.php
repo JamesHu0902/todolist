@@ -1,7 +1,7 @@
 <?php 
 include "msql.inc.php";
 date_default_timezone_set("Asia/Shanghai");
-$updatatime = date('Y')."/".date('m')."/".date('d')."-".date("h:i:sa");
+$updatatime = date('Y')."/".date('m')."/".date('d')."-".date("h:i:s");
 // 如果送出表單中有資料
 if(!empty($_POST['todo'])){
     // 將代辦事項新增至 todolist 資料表
@@ -41,6 +41,8 @@ if(!empty($_POST['todo'])){
                 while($row = mysqli_fetch_array($result)){
                     echo "<tr><td>{$row['代辦事項']}</td>
                             <td>{$row['開始時間']}</td>
+                            <td><a href='delete.php?del={$row['開始時間']}'>刪除</a></td>
+                            <td><a href='edit.php?edit={$row['開始時間']}'>更名</a></td>
                             </tr>";
                 }
                 echo "</table>";

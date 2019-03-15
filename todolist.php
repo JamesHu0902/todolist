@@ -1,12 +1,12 @@
 <?php 
 include "msql.inc.php";
 date_default_timezone_set("Asia/Shanghai");
-$updatatime = date('Y')."/".date('m')."/".date('d')."-".date("h:i:sa");
+$updatatime = date('Y')."/".date('m')."/".date('d')."-".date("h:i:s");
 // 如果送出表單中有資料
-if(!empty($_POST['todo'])){
+if(isset($_POST['name'])){
     // 將代辦事項新增至 todolist 資料表
     $sql = "insert 代辦事項(代辦事項,進度,開始時間)
-            values('{$_POST['todo']}','0','$updatatime')
+            values('{$_POST['name']}','0','$updatatime')
             ";
     if(!mysqli_query($conn,$sql)) echo"送出失敗";
     
@@ -26,7 +26,7 @@ if(!empty($_POST['todo'])){
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
     <!-- 導入Vue -->
     <script src="https://cdn.jsdelivr.net/npm/vue"></script>
-
+    <script src="https://cdn.staticfile.org/vue-resource/1.5.1/vue-resource.min.js"></script>
     <title>todolist</title>
 </head>
 <body>
@@ -124,6 +124,15 @@ if(!empty($_POST['todo'])){
                 title:val,
                 completed:false
             });
+            //POST 至 PHP 將新增送入資料庫
+            const api = 'todolist.php';
+            const vm = this;
+            this.$http.post(api,{name:vm.title , id:vm.id}).then((response)=>{
+                // console.log('新增');
+                console.log(response);
+                // if(response.data)
+            })
+            //
             this.newtodo = '';
             },
             delall:function(){

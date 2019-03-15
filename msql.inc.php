@@ -2,8 +2,8 @@
 // 資料庫設定
 $dbServer = "127.0.0.1";
 $dbUser = "root";
-$dbPqss = '';
-// $dbPqss = "CINPHOWN";
+// $dbPqss = '';
+$dbPqss = "CINPHOWN";
 $dbName = "todolist";
 
 // 連線資料庫
